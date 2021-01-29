@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid/issues"
   },
-  "homepage": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid#readme"
+  "homepage": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid#readme",
+  "dependencies": {
+    "pixi.js": "^5.3.7"
+  }
 }
