@@ -13,7 +13,7 @@ module.exports = {
 			// Necessary in order to use TypeScript
 			{
 			test: /\.ts$/,
-			use: "ts-loader",
+			use: "awesome-typescript-loader",
 			exclude: /node_modules/,
 			},
 		],
@@ -36,7 +36,11 @@ module.exports = {
 		// Do not accumulate files in ./dist
 		new CleanWebpackPlugin(),
 		// Copy assets to serve them
-		new CopyPlugin([{ from: "assets", to: "assets" }]),
+		new CopyPlugin({ 
+			patterns: [
+				{ from: "assets", to: "assets" },
+			]
+		}),
 	],
 	devServer: {
 		// webpack-dev-server configuration
@@ -46,5 +50,6 @@ module.exports = {
 		// Hot-reloading, the sole reason to use webpack here <3
 		hot: true,
 		writeToDisk: true,
+    		publicPath: "/",
 	},
 };
