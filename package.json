@@ -1,25 +1,28 @@
 {
-  "name": "pixijs-inventorygrid",
-  "version": "1.0.0",
-  "description": "A PixiJS study to develop a grid based inventory system like the one in Path of Exile.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DevGabrielDeSouza/pixijs-inventorygrid.git"
-  },
-  "keywords": [
-    "inventory"
-  ],
-  "author": "Gabriel de Souza",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid/issues"
-  },
-  "homepage": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid#readme",
-  "dependencies": {
-    "pixi.js": "^5.3.7"
-  }
+	"name": "pixijs-inventorygrid",
+	"version": "1.0.0",
+	"description": "A PixiJS study to develop a grid based inventory system like the one in Path of Exile.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DevGabrielDeSouza/pixijs-inventorygrid.git"
+	},
+	"keywords": [
+		"inventory"
+	],
+	"author": "Gabriel de Souza",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid/issues"
+	},
+	"homepage": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid#readme",
+	"dependencies": {
+		"pixi.js": "^5.3.7"
+	},
+	"devDependencies": {
+		"typescript": "^4.1.3"
+	}
 }
