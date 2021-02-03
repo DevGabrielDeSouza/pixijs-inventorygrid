@@ -1,42 +1,42 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from "pixi.js";
+
+import AssetLoader from './Systems/AssetLoader';
+import AppManager from "./Systems/AppManager";
+import SpriteRenderer from "./Renderers/SpriteRenderer";
+import RoundedRectangleRenderer from "./Renderers/RoundedRectangleRenderer";
+import DragableObject from "./Interactions/DragableObject";
 
 const load = (app: PIXI.Application) => {
-    return new Promise<void>((resolve) => {
-        app.loader.add('assets/tennis-ball.png').load(() => {
-            resolve();
-        });
-    });
+	return new Promise<void>((resolve) => {
+		app.loader.add("assets/tennis-ball.png").load(() => {
+			resolve();
+		});
+	});
 };
 
 const main = async () => {
-    // Actual app
-    let app = new PIXI.Application();
+	// Actual app
+	AppManager.initialize();
 
-    // Display application properly
-    document.body.style.margin = '0';
-    app.renderer.view.style.position = 'absolute';
-    app.renderer.view.style.display = 'block';
+	// Load assets
+	await AssetLoader.loadAllResources();
 
-    // View size = windows
-    app.renderer.resize(window.innerWidth, window.innerHeight);
+	let sprite = new SpriteRenderer(50, 50,  "assets/tennis-ball.png");
 
-    // Load assets
-    await load(app);
-    let sprite = new PIXI.Sprite(
-        app.loader.resources['assets/tennis-ball.png'].texture
-    );
-    sprite.x = window.innerWidth / 2 - sprite.width / 2;
-    sprite.y = window.innerHeight / 2 - sprite.height / 2;
-    app.stage.addChild(sprite);
+	/*sprite.x = window.innerWidth / 2;
+	sprite.y = window.innerHeight / 2;
 
-    // Handle window resizing
-    window.addEventListener('resize', (e) => {
-        app.renderer.resize(window.innerWidth, window.innerHeight);
-        sprite.x = window.innerWidth / 2 - sprite.width / 2;
-        sprite.y = window.innerHeight / 2 - sprite.height / 2;
-    });
+	// Handle window resizing
+	window.addEventListener("resize", (e) => {
+		sprite.x = window.innerWidth / 2;
+		sprite.y = window.innerHeight / 2;
+	});*/
 
-    document.body.appendChild(app.view);
+	let rect = new RoundedRectangleRenderer(300, 300, 200, 200, 0x650A5A, 30);
+	let rect2 = new RoundedRectangleRenderer(200, 400, 100, 100, 0xF0F0F0, 100);
+
+	let drag = new DragableObject(rect2.pixiInstance, true, 30);
+	let dragBall = new DragableObject(sprite.pixiInstance, true, 30);
 };
 
 main();

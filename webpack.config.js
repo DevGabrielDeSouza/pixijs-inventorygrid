@@ -12,9 +12,9 @@ module.exports = {
 		rules: [
 			// Necessary in order to use TypeScript
 			{
-			test: /\.ts$/,
-			use: "awesome-typescript-loader",
-			exclude: /node_modules/,
+				test: /\.ts$/,
+				use: "awesome-typescript-loader",
+				exclude: /node_modules/,
 			},
 		],
 	},
@@ -22,6 +22,9 @@ module.exports = {
 		// Alway keep '.js' even though you don't use it.
 		// https://github.com/webpack/webpack-dev-server/issues/720#issuecomment-268470989
 		extensions: [".ts", ".js"],
+		fallback: {
+			fs: false,
+		},
 	},
 	output: {
 		filename: "bundle.js",
@@ -36,10 +39,8 @@ module.exports = {
 		// Do not accumulate files in ./dist
 		new CleanWebpackPlugin(),
 		// Copy assets to serve them
-		new CopyPlugin({ 
-			patterns: [
-				{ from: "assets", to: "assets" },
-			]
+		new CopyPlugin({
+			patterns: [{ from: "assets", to: "assets" }],
 		}),
 	],
 	devServer: {
@@ -50,6 +51,6 @@ module.exports = {
 		// Hot-reloading, the sole reason to use webpack here <3
 		hot: true,
 		writeToDisk: true,
-    		publicPath: "/",
+		publicPath: "/",
 	},
 };
