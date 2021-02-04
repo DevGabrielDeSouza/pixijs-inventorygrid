@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import DraggableObject from "../Interactions/DraggableObject";
+import SpriteRenderer from "../Renderers/SpriteRenderer";
 import MathUtils from "../Utils/MathUtils";
 import GridContainer from "./GridContainer";
 import GridInventory from "./GridInventory";
@@ -8,9 +9,16 @@ class GridItem extends GridContainer {
 
 	private id: number;
 	private static lastId: number = 0;
+
+	private sprite: SpriteRenderer;
 	
 	private gridInventory: GridInventory;
 	private draggable: DraggableObject;
+
+	private spritePath: string;
+
+	private isbutton: boolean;
+
 	constructor(
 		x: number,
 		y: number,
@@ -19,6 +27,7 @@ class GridItem extends GridContainer {
 		slotSize: number,
 		padding: number,
 		gridInventory: GridInventory,
+		spritePath: string,
 		slotPoints: PIXI.Point[]
 	)
 	{
@@ -37,12 +46,19 @@ class GridItem extends GridContainer {
 
 		super(x, y, gridWidth, gridHeight, slotSize, padding, 0);
 
+		this.slotSize = slotSize;
+		this.padding = padding;
+		this.spritePath = spritePath;
+
+		this.isbutton = true;
+
 		GridItem.lastId++;
 		this.id = GridItem.lastId;
 
 		this.gridInventory = gridInventory;
 		this.draggable = new DraggableObject(this.pixiInstance, true, 30);
 
+		this.draggable.downPointerEvent.addListener(this.duplicate, this);
 		this.draggable.downPointerEvent.addListener(this.clearOnclick, this);
 		this.draggable.downPointerEvent.addListener(this.draggable.dragStart, this.draggable);
 		this.draggable.movePointerEvent.addListener(this.draggable.dragMove, this.draggable);
@@ -54,6 +70,21 @@ class GridItem extends GridContainer {
 
 		this.setSlotsStatus(this.id, true);
 		this.centerPivots();
+
+		this.sprite = new SpriteRenderer(0, 0, spritePath);
+		this.sprite.width = this.pixiInstance.width;
+		this.sprite.height = this.pixiInstance.height;
+		this.sprite.pixiInstance.position.set(this.pixiInstance.width / 2, this.pixiInstance.height / 2);
+		this.sprite.pixiInstance.setParent(this.pixiInstance);
+		this.sprite.pixiInstance.interactive = false;
+		this.sprite.visible = true;
+	}
+
+	duplicate(){
+		if(this.isbutton){
+			let copy = new GridItem(this.pixiInstance.x, this.pixiInstance.y, this.gridWidth, this.gridHeight, this.slotSize, this.padding, this.gridInventory, this.spritePath, this.usedSlotsPoints);
+			this.isbutton = false;
+		}
 	}
 
 	//#region Calculate inventory slots info 
@@ -155,7 +186,7 @@ class GridItem extends GridContainer {
 			} else {
 				if(!MathUtils.aabbCollision(this.pixiInstance, this.gridInventory.pixiInstance)){
 					this.draggable.positionBeforeDrag.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
-					//this.pixiInstance.visible = false;
+					this.pixiInstance.visible = false;
 				}else{
 					this.position = this.draggable.positionBeforeDrag;
 					if (this.validateSlots(true)) {

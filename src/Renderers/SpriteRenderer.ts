@@ -7,9 +7,9 @@ import PixiRenderer from "./PixiRenderer";
 class SpriteRenderer extends PixiRenderer{
 	sprite: PIXI.Sprite;
 
-	constructor(x: number, y: number, texturePath: string) {
+	constructor(x: number, y: number, texturePath: string, parentContainer?: PIXI.Container) {
 		let sprite = new PIXI.Sprite(SpriteRenderer.getLoadedTexture(texturePath));
-		super(x, y, sprite);
+		super(x, y, sprite, parentContainer);
 		this.sprite = sprite;
 	}
 

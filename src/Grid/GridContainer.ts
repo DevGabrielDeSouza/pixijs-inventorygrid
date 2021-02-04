@@ -11,8 +11,8 @@ class GridContainer extends PixiRenderer{
 	public get gridHeight(): number {
 		return this._gridHeight;
 	}
-	private slotSize: number;
-	private padding: number;
+	protected slotSize: number;
+	protected padding: number;
 	private slotRadius: number;
 
 	private _slotsStatus: number[][];

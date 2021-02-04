@@ -42,10 +42,10 @@ const main = async () => {
 	let dragBall = new DraggableObject(sprite.pixiInstance, true, 30);*/
 
 	let inventory = new GridInventory(window.innerWidth / 2, window.innerHeight / 2, 6, 4, 40, 10);
-	let item = new GridItem(400, 550, 3, 2, 50, 0, inventory,[
+	let item = new GridItem(400, 550, 3, 2, 50, 0, inventory, "assets/tennis-ball.png", [
 		new PIXI.Point(0, 0), new PIXI.Point(1, 0), new PIXI.Point(0, 1)
 	]);
-	let item2 = new GridItem(600, 550, 1, 3, 50, 0, inventory,[
+	let item2 = new GridItem(600, 550, 1, 3, 50, 0, inventory, "assets/tennis-ball.png", [
 		new PIXI.Point(0, 0), new PIXI.Point(0, 1), new PIXI.Point(1, 1), new PIXI.Point(1, 2)
 	]);
 };
