@@ -9,20 +9,24 @@ import GridContainer from "./Grid/GridContainer";
 import GridInventory from "./Grid/GridInventory";
 import GridItem from "./Grid/GridItem";
 
-const load = (app: PIXI.Application) => {
+/*const load = (app: PIXI.Application) => {
 	return new Promise<void>((resolve) => {
 		app.loader.add("assets/tennis-ball.png").load(() => {
 			resolve();
 		});
 	});
-};
+};*/
 
 const main = async () => {
 	// Actual app
 	AppManager.initialize();
 
 	// Load assets
-	await AssetLoader.loadAllResources();
+	//await AssetLoader.loadAllSprites();
+
+	await AssetLoader.loadSprite("tennis-ball");
+	await AssetLoader.loadSprite("boomerang");
+	await AssetLoader.loadSprite("electric");
 
 	//let sprite = new SpriteRenderer(50, 50,  "assets/tennis-ball.png");
 
@@ -42,10 +46,10 @@ const main = async () => {
 	let dragBall = new DraggableObject(sprite.pixiInstance, true, 30);*/
 
 	let inventory = new GridInventory(window.innerWidth / 2, window.innerHeight / 2, 6, 4, 40, 10);
-	let item = new GridItem(400, 550, 3, 2, 50, 0, inventory, "assets/tennis-ball.png", [
-		new PIXI.Point(0, 0), new PIXI.Point(1, 0), new PIXI.Point(0, 1)
+	let item = new GridItem(400, 550, 3, 2, 50, 0, inventory, "assets/boomerang.png", [
+		new PIXI.Point(0, 0), new PIXI.Point(1, 0), new PIXI.Point(1, 1)
 	]);
-	let item2 = new GridItem(600, 550, 1, 3, 50, 0, inventory, "assets/tennis-ball.png", [
+	let item2 = new GridItem(600, 550, 1, 3, 50, 0, inventory, "assets/electric.png", [
 		new PIXI.Point(0, 0), new PIXI.Point(0, 1), new PIXI.Point(1, 1), new PIXI.Point(1, 2)
 	]);
 };

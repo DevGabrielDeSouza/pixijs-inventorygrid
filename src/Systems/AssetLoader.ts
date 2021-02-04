@@ -15,7 +15,7 @@ class AssetLoader extends AppManager{
 		super();
 	}
 
-	private static loadSprite(path: string) {
+	public static loadSprite(path: string) {
 		return new Promise<void>((resolve) => {
 			AppManager.loadSingleSprite("assets/" + path + ".png").load(() => {
 				resolve();
@@ -23,7 +23,7 @@ class AssetLoader extends AppManager{
 		});
 	}
 
-	private static async loadAllSprites() {
+	public static async loadAllSprites() {
 		let loadingPromise: Promise<void>[] = [];
 
 		spritesNames.forEach(async spriteName => {
