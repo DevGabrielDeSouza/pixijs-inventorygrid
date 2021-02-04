@@ -111,6 +111,7 @@ class GridItem extends GridContainer {
 		GridItem.allItems.push(this);
 	}
 
+	//#region Automatic movements 
 	duplicate(){
 		if(this.isbutton  && this.draggable.dragging/*&& this.allowbutton*/){
 			let copy = new GridItem(this.container.x, this.container.y, this.gridWidth, this.gridHeight, this.slotSize, this.padding, this.gridInventory, this.spritePath, this.usedSlotsPoints);
@@ -128,6 +129,7 @@ class GridItem extends GridContainer {
 		this.container.visible = false;
 		this.setInventorySlots(-1);
 	}
+	//#endregion
 
 	//#region Calculate inventory slots info 
 	distanceToInventory(pointSlot: PIXI.Point, pointItem: PIXI.Point) {
@@ -305,6 +307,7 @@ class GridItem extends GridContainer {
 	}
 	//#endregion
 
+	//#region Adapted grid math 
 	slotPointToGlobalPosition(slotPoint: PIXI.Point) {
 		
 		return new PIXI.Point(
@@ -319,5 +322,6 @@ class GridItem extends GridContainer {
 			Math.floor(((globalPosition.y - this.container.position.y + this.container.height / 2)) / (this.slotSize + this.padding))
 		);
 	}
+	//#endregion
 }
 export default GridItem;
