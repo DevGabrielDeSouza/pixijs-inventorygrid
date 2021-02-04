@@ -300,6 +300,8 @@ class GridItem extends GridContainer {
 					}
 				}*/
 			}
+		}else{
+			this.setInventorySlots(this.id);
 		}
 		this.draggable.resetOnRelease();
 
