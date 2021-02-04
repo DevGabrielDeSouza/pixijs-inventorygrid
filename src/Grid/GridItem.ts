@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import DraggableObject from "../Interactions/DraggableObject";
 import SpriteRenderer from "../Renderers/SpriteRenderer";
+import AppManager from "../Systems/AppManager";
 import MathUtils from "../Utils/MathUtils";
 import GridContainer from "./GridContainer";
 import GridInventory from "./GridInventory";
@@ -18,6 +19,8 @@ class GridItem extends GridContainer {
 	private spritePath: string;
 
 	private isbutton: boolean;
+
+	private container: PIXI.Container;
 
 	constructor(
 		x: number,
@@ -56,14 +59,6 @@ class GridItem extends GridContainer {
 		this.id = GridItem.lastId;
 
 		this.gridInventory = gridInventory;
-		this.draggable = new DraggableObject(this.pixiInstance, true, 30);
-
-		this.draggable.downPointerEvent.addListener(this.duplicate, this);
-		this.draggable.downPointerEvent.addListener(this.clearOnclick, this);
-		this.draggable.downPointerEvent.addListener(this.draggable.dragStart, this.draggable);
-		this.draggable.movePointerEvent.addListener(this.draggable.dragMove, this.draggable);
-		this.draggable.upPointerEvent.addListener(this.dragEnd, this);
-		this.draggable.upOutsidePointerEvent.addListener(this.dragEnd, this);
 
 		this.usedSlotsPoints = [];
 		this.usedSlotsPoints = slotPoints;
@@ -71,18 +66,42 @@ class GridItem extends GridContainer {
 		this.setSlotsStatus(this.id, true);
 		this.centerPivots();
 
+		this.container = new PIXI.Container;
+		this.container.width = this.pixiInstance.width;
+		this.container.height = this.pixiInstance.height;
+		this.container.pivot.x = this.container.width / 2;
+		this.container.pivot.y = this.container.height / 2;
+		this.container.position.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
+
+		//console.log(this.pixiInstance.pivot);
+		//this.container.position.set(50, 50);
+
+		AppManager.addStageChild(this.container);
+
+		this.pixiInstance.setParent(this.container);
+		this.pixiInstance.position.set(0,0);
+
 		this.sprite = new SpriteRenderer(0, 0, spritePath);
-		this.sprite.width = this.pixiInstance.width;
-		this.sprite.height = this.pixiInstance.height;
-		this.sprite.pixiInstance.position.set(this.pixiInstance.width / 2, this.pixiInstance.height / 2);
-		this.sprite.pixiInstance.setParent(this.pixiInstance);
+		this.sprite.width = this.container.width;
+		this.sprite.height = this.container.height;
+		this.sprite.pixiInstance.position.set(0, 0);
+		this.sprite.pixiInstance.setParent(this.container);
 		this.sprite.pixiInstance.interactive = false;
-		this.sprite.visible = true;
+
+
+		this.draggable = new DraggableObject(this.pixiInstance, this.container, true, 30);
+
+		this.draggable.downPointerEvent.addListener(this.duplicate, this);
+		this.draggable.downPointerEvent.addListener(this.clearOnclick, this);
+		this.draggable.downPointerEvent.addListener(this.draggable.dragStart, this.draggable);
+		this.draggable.movePointerEvent.addListener(this.draggable.dragMove, this.draggable);
+		this.draggable.upPointerEvent.addListener(this.dragEnd, this);
+		this.draggable.upOutsidePointerEvent.addListener(this.dragEnd, this);
 	}
 
 	duplicate(){
 		if(this.isbutton){
-			let copy = new GridItem(this.pixiInstance.x, this.pixiInstance.y, this.gridWidth, this.gridHeight, this.slotSize, this.padding, this.gridInventory, this.spritePath, this.usedSlotsPoints);
+			let copy = new GridItem(this.container.x, this.container.y, this.gridWidth, this.gridHeight, this.slotSize, this.padding, this.gridInventory, this.spritePath, this.usedSlotsPoints);
 			this.isbutton = false;
 		}
 	}
@@ -163,8 +182,8 @@ class GridItem extends GridContainer {
 
 	moveToInventory() { 
 		var distance = this.distanceToInventory(this.slotPosUnderPoint(new PIXI.Point(0, 0)), new PIXI.Point(0, 0));
-		this.position.x += distance.x;
-		this.position.y += distance.y;
+		this.container.position.x += distance.x;
+		this.container.position.y += distance.y;
 	}
 	//#endregion
 
@@ -182,23 +201,41 @@ class GridItem extends GridContainer {
 				//this.draggable.positionBeforeDrag = this.position;
 				this.setInventorySlots(this.id);
 				
-				this.draggable.positionBeforeDrag.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
+				this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
 			} else {
-				if(!MathUtils.aabbCollision(this.pixiInstance, this.gridInventory.pixiInstance)){
-					this.draggable.positionBeforeDrag.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
-					this.pixiInstance.visible = false;
+				this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
+				this.container.visible = false;
+				/*if(!MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)){
+					this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
+					this.container.visible = false;
+					console.log("sumiu");
 				}else{
-					this.position = this.draggable.positionBeforeDrag;
+					this.container.position = this.draggable.positionBeforeDrag;
 					if (this.validateSlots(true)) {
 						this.setInventorySlots(this.id);
 					}
-				}
+				}*/
 			}
+			this.draggable.resetOnRelease();
 		}
 
-		this.draggable.resetOnRelease();
 		//this.gridInventory.debug();
 	}
 	//#endregion
+
+	slotPointToGlobalPosition(slotPoint: PIXI.Point) {
+		
+		return new PIXI.Point(
+			slotPoint.x * (this.slotSize + + this.padding) + this.slotSize / 2 + this.container.position.x - this.container.width / 2,
+			slotPoint.y * (this.slotSize + this.padding) + this.slotSize / 2 + this.container.position.y - this.container.height / 2,
+		);
+	}
+
+	globalPositionToSlotPoint(globalPosition: PIXI.Point) {
+		return new PIXI.Point(
+			Math.floor(((globalPosition.x - this.container.position.x + this.container.width / 2)) / (this.slotSize + this.padding)),
+			Math.floor(((globalPosition.y - this.container.position.y + this.container.height / 2)) / (this.slotSize + this.padding))
+		);
+	}
 }
 export default GridItem;

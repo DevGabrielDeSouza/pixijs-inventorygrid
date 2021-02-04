@@ -8,6 +8,8 @@ class DraggableObject extends InteractableObject {
 
 	private interactionData?: PIXI.InteractionData;
 
+	private movableContainer: PIXI.Container;
+
 	private _positionBeforeDrag: PIXI.Point = new PIXI.Point;
 	public get positionBeforeDrag(): PIXI.Point {
 		return this._positionBeforeDrag;
@@ -42,17 +44,20 @@ class DraggableObject extends InteractableObject {
 		this._keepPointerOffset = value;
 	}
 
-	constructor(pixiInstance: PIXI.Container, keepPointerOffset: boolean, minimumMove?: number) {
+	constructor(pixiInstance: PIXI.Container, movableContainer: PIXI.Container, keepPointerOffset: boolean, minimumMove?: number) {
 		super(pixiInstance);
 		this._keepPointerOffset = keepPointerOffset;
+
+		this.movableContainer = movableContainer;
+
 		/*this.downPointerEvent.addListener(this.dragStart, this);
 		this.movePointerEvent.addListener(this.dragMove, this);
 		this.upPointerEvent.addListener(this.dragEnd, this);
 		this.upOutsidePointerEvent.addListener(this.dragEnd, this);*/
 
-		this._positionBeforeDrag.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
+		this._positionBeforeDrag.set(this.movableContainer.position.x, this.movableContainer.position.y);
 
-		this._initialPosition.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
+		this._initialPosition.set(this.movableContainer.position.x, this.movableContainer.position.y);
 
 		if(minimumMove != undefined){
 			this.minimumMove = minimumMove;
@@ -62,16 +67,16 @@ class DraggableObject extends InteractableObject {
 	dragStart(event: PIXI.InteractionEvent){
 		this.interactionData = event.data;
 
-		this._positionBeforeDrag.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
+		this._positionBeforeDrag.set(this.movableContainer.position.x, this.movableContainer.position.y);
 
-		let targetPosition = this.interactionData?.getLocalPosition(this.pixiInstance.parent);
+		let targetPosition = this.interactionData?.getLocalPosition(this.movableContainer.parent);
 
 		/*if(this._initialPosition == undefined){
 			this._initialPosition = this._positionBeforeDrag;
 		}*/
 
 		if (this._keepPointerOffset && targetPosition != undefined){
-			this.pointerOffset?.set(this.pixiInstance.position.x - targetPosition.x, this.pixiInstance.position.y - targetPosition.y);
+			this.pointerOffset?.set(this.movableContainer.position.x - targetPosition.x, this.movableContainer.position.y - targetPosition.y);
 		}
 
 		this._touched = true;
@@ -79,12 +84,12 @@ class DraggableObject extends InteractableObject {
 	}
 
 	dragMove() {
-		let targetPosition = this.interactionData?.getLocalPosition(this.pixiInstance.parent);
+		let targetPosition = this.interactionData?.getLocalPosition(this.movableContainer.parent);
 		if (this._touched && targetPosition != undefined){
 			targetPosition.x += this.pointerOffset.x;
 			targetPosition.y += this.pointerOffset.y;
 			if(this._dragging){
-				Movements.moveToPositionWithBoundaries(this.pixiInstance, targetPosition, new PIXI.Point(0,0), AppManager.bounds);
+				Movements.moveToPositionWithBoundaries(this.movableContainer, targetPosition, new PIXI.Point(0,0), AppManager.bounds);
 
 			}else{
 				if(MathUtils.distanceBetweenPoints(this._positionBeforeDrag, targetPosition) > this.minimumMove){
