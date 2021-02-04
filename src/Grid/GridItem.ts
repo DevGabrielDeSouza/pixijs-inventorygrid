@@ -12,6 +12,7 @@ class GridItem extends GridContainer {
 	private static lastId: number = -1;
 
 	private static allItems: GridItem[] = [];
+	private lastItemsInPlace: GridItem[];
 
 	private sprite: SpriteRenderer;
 	
@@ -71,6 +72,8 @@ class GridItem extends GridContainer {
 
 		this.usedSlotsPoints = [];
 		this.usedSlotsPoints = slotPoints;
+
+		this.lastItemsInPlace = [];
 
 		this.setSlotsStatus(this.id, true);
 		this.centerPivots();
@@ -161,7 +164,14 @@ class GridItem extends GridContainer {
 		return true;
 	}
 
-	validateSlotsFeedback(){
+	setColorInAll(items: GridItem[], color: number){
+		for(let i = 0; i < items.length; i++){
+			items[i].setColor(color);
+		}
+	}
+
+	validateSlotsFeedback() {
+		this.setColorInAll(this.lastItemsInPlace, 0xffffff);
 		if(this.draggable.dragging){
 			let itemsInPlace: GridItem[] = [];
 
@@ -178,6 +188,9 @@ class GridItem extends GridContainer {
 					currentPoint.y >= this.gridInventory.gridHeight
 				) {
 					this.setColor(0xffffff);
+
+					this.lastItemsInPlace = itemsInPlace;
+
 					return null;
 				} else if (this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y] > -1) {
 					let currentItemInPlace = GridItem.allItems[this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y]];
@@ -189,9 +202,17 @@ class GridItem extends GridContainer {
 
 			if (itemsInPlace.length > 1) {
 				this.setColor(0xff0000);
+				this.setColorInAll(itemsInPlace, 0xff0000);
+
+				this.lastItemsInPlace = itemsInPlace;
+
 				return null;
 			} else if (itemsInPlace.length == 1) {
 				this.setColor(0xffff00);
+				this.setColorInAll(itemsInPlace, 0xffff00);
+
+				this.lastItemsInPlace = itemsInPlace;
+
 				return null;
 			}
 			this.setColor(0x00ff00);
@@ -274,6 +295,8 @@ class GridItem extends GridContainer {
 
 	dragEnd() {
 		if (this.draggable.dragging) {
+			this.setColorInAll(this.lastItemsInPlace, 0xffffff);
+			this.lastItemsInPlace = [];
 			if (this.validateSlots(true)) {
 				this.moveToInventory();
 				//this.draggable.positionBeforeDrag = this.position;
