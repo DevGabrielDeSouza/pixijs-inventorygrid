@@ -7,36 +7,32 @@ class EventTrigger {
 	private events?: Function[];
 	private pixiInstance: PIXI.Container;
 	private eventName: string;
-	private interactableObject: InteractableObject;
+	/*private contextObject: any;*/
 
 	constructor(
 		eventName: string, 
 		pixiInstance: PIXI.Container,
-		interactable: InteractableObject, 
+		/*context: InteractableObject, */
 		eventsFunctions?: Function[]
 	) {
 		this.events = eventsFunctions;
 		this.pixiInstance = pixiInstance;
 		this.eventName = eventName;
-		this.interactableObject = interactable;
+		/*this.contextObject = context;*/
 
 		this.pixiInstance.interactive = true;
 	}
 
-	/*private addAllListeners(){
-		if (this.events != undefined) {
-			for (let i = 0; i < this.events.length; i++) {
-				this.pixiInstance.on(this.eventName, this.events[i], this.interactableObject);
-			}
-		}
-	}*/
-
-	public addListener(eventFunction: Function) {
+	public addListener(eventFunction: Function, contextObject?: any) {
 		if(this.events == undefined){
 			this.events = [];
 		}
 		this.events.push(eventFunction);
-		this.pixiInstance.on(this.eventName, this.events[this.events.length - 1], this.interactableObject);
+		if(contextObject != undefined){
+			this.pixiInstance.on(this.eventName, this.events[this.events.length - 1], contextObject);
+		} else {
+			this.pixiInstance.on(this.eventName, this.events[this.events.length - 1]);
+		}
 	}
 
 	public removeAllListeners(){

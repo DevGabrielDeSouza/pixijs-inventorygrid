@@ -8,12 +8,27 @@ abstract class PixiRenderer {
 		return this._pixiInstance;
 	}
 
-	constructor(x: number, y: number, pixiInstance: PIXI.Container){
+
+
+	public get visible(): boolean {
+		return this.pixiInstance.visible;
+	}
+	public set visible(value: boolean) {
+		this.pixiInstance.visible = value;
+	}
+
+	constructor(x: number, y: number, pixiInstance: PIXI.Container, parentContainer?: PIXI.Container){
 		this._pixiInstance = pixiInstance;
 		this.pixiInstance.x = x;
 		this.pixiInstance.y = y;
+		
 		this.centerPivots();
-		AppManager.addStageChild(this.pixiInstance);
+
+		if(parentContainer != undefined){
+			parentContainer.addChild(this.pixiInstance);
+		}else{
+			AppManager.addStageChild(this.pixiInstance);
+		}
 	}
 
 	protected centerPivots() {

@@ -28,15 +28,27 @@ class InteractableObject {
 	public get movePointerEvent(): InteractiveEvent /*| undefined*/ {
 		return this._movePointerEvent;
 	}
+
+	private _overPointerEvent: InteractiveEvent /*| undefined*/;
+	public get overPointerEvent(): InteractiveEvent /*| undefined*/ {
+		return this._overPointerEvent;
+	}
+
+	private _outPointerEvent: InteractiveEvent /*| undefined*/;
+	public get outPointerEvent(): InteractiveEvent /*| undefined*/ {
+		return this._outPointerEvent;
+	}
 	//#endregion
 
 	constructor(pixiInstance: PIXI.Container) {
 		this._pixiInstance = pixiInstance;
 
-		this._downPointerEvent = new InteractiveEvent("pointerdown", this.pixiInstance, this);
-		this._upPointerEvent = new InteractiveEvent("pointerup", this.pixiInstance, this);
-		this._upOutsidePointerEvent = new InteractiveEvent("pointerup", this.pixiInstance, this);
-		this._movePointerEvent = new InteractiveEvent("pointermove", this.pixiInstance, this);
+		this._downPointerEvent = new InteractiveEvent("pointerdown", this.pixiInstance);
+		this._upPointerEvent = new InteractiveEvent("pointerup", this.pixiInstance);
+		this._upOutsidePointerEvent = new InteractiveEvent("pointerupoutside", this.pixiInstance);
+		this._movePointerEvent = new InteractiveEvent("pointermove", this.pixiInstance);
+		this._overPointerEvent = new InteractiveEvent("pointerover", this.pixiInstance);
+		this._outPointerEvent = new InteractiveEvent("pointerout", this.pixiInstance);
 
 	}
 }

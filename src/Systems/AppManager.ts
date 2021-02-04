@@ -37,8 +37,6 @@ class AppManager {
 		});
 
 		document.body.appendChild(AppManager.app.view);
-
-		console.log(AppManager.bounds);
 	}
 
 	protected static loadSingleSprite(path: string) {
