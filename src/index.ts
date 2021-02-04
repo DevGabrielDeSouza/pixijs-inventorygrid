@@ -52,6 +52,9 @@ const main = async () => {
 	let item2 = new GridItem(600, 550, 1, 3, 50, 0, inventory, "assets/electric.png", [
 		new PIXI.Point(0, 0), new PIXI.Point(0, 1), new PIXI.Point(1, 1), new PIXI.Point(1, 2)
 	]);
+	let item3 = new GridItem(200, 550, 1, 3, 50, 0, inventory, "assets/tennis-ball.png", [
+		new PIXI.Point(0, 0), new PIXI.Point(1, 0), new PIXI.Point(0, 1), new PIXI.Point(1, 1)
+	]);
 };
 
 main();

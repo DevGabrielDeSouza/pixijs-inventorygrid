@@ -21,7 +21,9 @@ class GridItem extends GridContainer {
 	private spritePath: string;
 
 	private isbutton: boolean;
-	private allowbutton: boolean;
+	private inLimbo: boolean;
+
+	private limboPosition: PIXI.Point;
 
 	private container: PIXI.Container;
 
@@ -52,12 +54,15 @@ class GridItem extends GridContainer {
 
 		super(x, y, gridWidth, gridHeight, slotSize, padding, 0);
 
+		this.limboPosition = new PIXI.Point(100, 100);
+
 		this.slotSize = slotSize;
 		this.padding = padding;
 		this.spritePath = spritePath;
 
 		this.isbutton = true;
-		this.allowbutton = false;
+
+		this.inLimbo = false;
 
 		GridItem.lastId++;
 		this.id = GridItem.lastId;
@@ -102,14 +107,8 @@ class GridItem extends GridContainer {
 		this.draggable.movePointerEvent.addListener(this.validateSlotsFeedback, this);
 		this.draggable.upPointerEvent.addListener(this.dragEnd, this);
 		this.draggable.upOutsidePointerEvent.addListener(this.dragEnd, this);
-		this.draggable.upPointerEvent.addListener(this.allowButtonClick, this);
-		this.draggable.upOutsidePointerEvent.addListener(this.allowButtonClick, this);
 
 		GridItem.allItems.push(this);
-	}
-
-	allowButtonClick(){
-		this.allowbutton = true;
 	}
 
 	duplicate(){
@@ -117,6 +116,12 @@ class GridItem extends GridContainer {
 			let copy = new GridItem(this.container.x, this.container.y, this.gridWidth, this.gridHeight, this.slotSize, this.padding, this.gridInventory, this.spritePath, this.usedSlotsPoints);
 			this.isbutton = false;
 		}
+	}
+
+	goToLimbo() {
+		this.setInventorySlots(-1);
+		this.container.position = this.limboPosition;
+		this.inLimbo = true;
 	}
 
 	destroy(){
@@ -219,7 +224,9 @@ class GridItem extends GridContainer {
 		if (itemsInPlace.length > 1){
 			return false;
 		} else if (itemsInPlace.length == 1){
-			itemsInPlace[0].destroy();
+			//itemsInPlace[0].destroy();
+			itemsInPlace[0].goToLimbo();
+
 		}
 
 		return true;
@@ -271,10 +278,15 @@ class GridItem extends GridContainer {
 				this.setInventorySlots(this.id);
 				
 				this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
+				this.inLimbo = false;
 				this.setColor(0xffffff);
 			} else {
-				this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
-				this.destroy();
+				//this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
+				if (!this.inLimbo) {
+					this.destroy();
+				} else if (MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)){
+					this.container.position = this.draggable.positionBeforeDrag;
+				}
 				/*if(!MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)){
 					this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
 					this.container.visible = false;
