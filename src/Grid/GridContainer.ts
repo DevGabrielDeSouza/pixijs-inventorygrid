@@ -24,6 +24,8 @@ class GridContainer extends PixiRenderer{
 		return this._slotsRenderers;
 	}
 
+	protected graphicsContainer: PIXI.Graphics;
+
 	protected usedSlotsPoints: PIXI.Point[];
 
 	constructor(x: number, y: number, gridWidth: number, gridHeight: number, slotSize: number, padding: number, slotRadius: number){
@@ -38,6 +40,8 @@ class GridContainer extends PixiRenderer{
 		this._slotsStatus = [];
 		this.usedSlotsPoints = [];
 		this._slotsRenderers = [];
+
+		this.graphicsContainer = new PIXI.Graphics;
 
 		this.initializeSlots();
 		this.centerPivots();
@@ -61,6 +65,14 @@ class GridContainer extends PixiRenderer{
 				);
 				this._slotsRenderers[i][j].visible = false;
 				this._slotsStatus[i][j] = -1;
+			}
+		}
+	}
+
+	setColor(tintColor: number){
+		for (let i = 0; i < this.gridWidth; i++) {
+			for (let j = 0; j < this.gridHeight; j++) {
+				this._slotsRenderers[i][j].setColor(tintColor);
 			}
 		}
 	}

@@ -13,9 +13,10 @@ class RoundedRectangleRenderer extends GraphicsRenderer{
 		height: number,
 		color: number,
 		radius: number,
-		parentContainer?: PIXI.Container
+		parentContainer?: PIXI.Container, 
+		graphicsContainer?: PIXI.Graphics
 	) {
-		super(x, y, width, height, color, parentContainer);
+		super(x, y, width, height, color, parentContainer, graphicsContainer);
 		this.radiusDraw = radius;
 		this.draw();
 	}

@@ -94,9 +94,14 @@ class DraggableObject extends InteractableObject {
 			}else{
 				if(MathUtils.distanceBetweenPoints(this._positionBeforeDrag, targetPosition) > this.minimumMove){
 					this._dragging = true;
+					this.dragStartMove();
 				}
 			}
 		}
+	}
+
+	dragStartMove(){
+
 	}
 
 	dragEnd(){

@@ -9,7 +9,9 @@ import GridInventory from "./GridInventory";
 class GridItem extends GridContainer {
 
 	private id: number;
-	private static lastId: number = 0;
+	private static lastId: number = -1;
+
+	private static allItems: GridItem[] = [];
 
 	private sprite: SpriteRenderer;
 	
@@ -19,6 +21,7 @@ class GridItem extends GridContainer {
 	private spritePath: string;
 
 	private isbutton: boolean;
+	private allowbutton: boolean;
 
 	private container: PIXI.Container;
 
@@ -54,6 +57,7 @@ class GridItem extends GridContainer {
 		this.spritePath = spritePath;
 
 		this.isbutton = true;
+		this.allowbutton = false;
 
 		GridItem.lastId++;
 		this.id = GridItem.lastId;
@@ -91,19 +95,33 @@ class GridItem extends GridContainer {
 
 		this.draggable = new DraggableObject(this.pixiInstance, this.container, true, 30);
 
-		this.draggable.downPointerEvent.addListener(this.duplicate, this);
+		this.draggable.movePointerEvent.addListener(this.duplicate, this);
 		this.draggable.downPointerEvent.addListener(this.clearOnclick, this);
 		this.draggable.downPointerEvent.addListener(this.draggable.dragStart, this.draggable);
 		this.draggable.movePointerEvent.addListener(this.draggable.dragMove, this.draggable);
+		this.draggable.movePointerEvent.addListener(this.validateSlotsFeedback, this);
 		this.draggable.upPointerEvent.addListener(this.dragEnd, this);
 		this.draggable.upOutsidePointerEvent.addListener(this.dragEnd, this);
+		this.draggable.upPointerEvent.addListener(this.allowButtonClick, this);
+		this.draggable.upOutsidePointerEvent.addListener(this.allowButtonClick, this);
+
+		GridItem.allItems.push(this);
+	}
+
+	allowButtonClick(){
+		this.allowbutton = true;
 	}
 
 	duplicate(){
-		if(this.isbutton){
+		if(this.isbutton  && this.draggable.dragging/*&& this.allowbutton*/){
 			let copy = new GridItem(this.container.x, this.container.y, this.gridWidth, this.gridHeight, this.slotSize, this.padding, this.gridInventory, this.spritePath, this.usedSlotsPoints);
 			this.isbutton = false;
 		}
+	}
+
+	destroy(){
+		this.container.visible = false;
+		this.setInventorySlots(-1);
 	}
 
 	//#region Calculate inventory slots info 
@@ -136,11 +154,53 @@ class GridItem extends GridContainer {
 		return true;
 	}
 
+	validateSlotsFeedback(){
+		if(this.draggable.dragging){
+			let itemsInPlace: GridItem[] = [];
+
+			for (var i = 0; i < this.usedSlotsPoints.length; i++) {
+				var currentPoint = this.gridInventory.globalPositionToSlotPoint(this.slotPointToGlobalPosition(this.usedSlotsPoints[i]));
+
+				//console.log(currentPoint);
+
+				//let currentInventoryStatus = this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y];
+
+				if (currentPoint.x < 0 ||
+					currentPoint.x >= this.gridInventory.gridWidth ||
+					currentPoint.y < 0 ||
+					currentPoint.y >= this.gridInventory.gridHeight
+				) {
+					this.setColor(0xffffff);
+					return null;
+				} else if (this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y] > -1) {
+					let currentItemInPlace = GridItem.allItems[this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y]];
+					if (!itemsInPlace.includes(currentItemInPlace)) {
+						itemsInPlace.push(currentItemInPlace);
+					}
+				}
+			}
+
+			if (itemsInPlace.length > 1) {
+				this.setColor(0xff0000);
+				return null;
+			} else if (itemsInPlace.length == 1) {
+				this.setColor(0xffff00);
+				return null;
+			}
+			this.setColor(0x00ff00);
+		}
+	}
+
 	validateSlots(checkStatus: boolean) {
+
+		let itemsInPlace: GridItem[] = [];
+
 		for (var i = 0; i < this.usedSlotsPoints.length; i++) {
 			var currentPoint = this.gridInventory.globalPositionToSlotPoint(this.slotPointToGlobalPosition(this.usedSlotsPoints[i]));
 
 			//console.log(currentPoint);
+
+			//let currentInventoryStatus = this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y];
 
 			if (currentPoint.x < 0 ||
 				currentPoint.x >= this.gridInventory.gridWidth ||
@@ -148,9 +208,18 @@ class GridItem extends GridContainer {
 				currentPoint.y >= this.gridInventory.gridHeight
 			) {
 				return false;
-			} else if (checkStatus && this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y] != -1) {
-				return false;
+			} else if (checkStatus && this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y] > -1) {
+				let currentItemInPlace = GridItem.allItems[this.gridInventory.slotsStatus[currentPoint.x][currentPoint.y]];
+				if (!itemsInPlace.includes(currentItemInPlace)){
+					itemsInPlace.push(currentItemInPlace);
+				}
 			}
+		}
+
+		if (itemsInPlace.length > 1){
+			return false;
+		} else if (itemsInPlace.length == 1){
+			itemsInPlace[0].destroy();
 		}
 
 		return true;
@@ -202,9 +271,10 @@ class GridItem extends GridContainer {
 				this.setInventorySlots(this.id);
 				
 				this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
+				this.setColor(0xffffff);
 			} else {
 				this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
-				this.container.visible = false;
+				this.destroy();
 				/*if(!MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)){
 					this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
 					this.container.visible = false;
@@ -216,8 +286,8 @@ class GridItem extends GridContainer {
 					}
 				}*/
 			}
-			this.draggable.resetOnRelease();
 		}
+		this.draggable.resetOnRelease();
 
 		//this.gridInventory.debug();
 	}

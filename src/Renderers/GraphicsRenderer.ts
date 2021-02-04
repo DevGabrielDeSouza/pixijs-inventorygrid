@@ -23,15 +23,26 @@ class GraphicsRenderer extends PixiRenderer{
 		this._heightDraw = value;
 	}*/
 	
-	constructor(x: number, y: number, drawWidth: number, drawHeight: number, color: number, parentContainer?: PIXI.Container){
-		let graphics = new PIXI.Graphics;
-		super(x, y, graphics, parentContainer);
+	constructor(x: number, y: number, drawWidth: number, drawHeight: number, color: number, parentContainer?: PIXI.Container, graphicsContainer?: PIXI.Graphics){
+		
+		
+		if (graphicsContainer != undefined) {
+			super(x, y, graphicsContainer, parentContainer);
+			this.graphics = graphicsContainer;
+		} else {
+			let graphics = new PIXI.Graphics;
+			super(x, y, graphics, parentContainer);
+			this.graphics = graphics;
+		}
 
 		this._widthDraw = drawWidth;
 		this._heightDraw = drawHeight;
-		
-		this.graphics = graphics;	
+			
 		this.drawColor = color;
+	}
+
+	setColor(tintColor: number){
+		this.graphics.tint = tintColor;
 	}
 
 	//#region Drawning methods 
