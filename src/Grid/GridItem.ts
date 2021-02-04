@@ -265,7 +265,7 @@ class GridItem extends GridContainer {
 	}
 	//#endregion
 
-	//#region Interactions 
+	//#region Custom specifics interactions 
 	clearOnclick() {
 		if (this.validateSlots(false)) {
 			this.setInventorySlots(-1);
