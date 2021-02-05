@@ -1,0 +1,38 @@
+{
+	"name": "pixijs-inventorygrid",
+	"version": "1.0.0",
+	"description": "A PixiJS study to develop a grid based inventory system like the one in Path of Exile.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "webpack serve --mode=development"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DevGabrielDeSouza/pixijs-inventorygrid.git"
+	},
+	"keywords": [
+		"inventory"
+	],
+	"author": "Gabriel de Souza",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid/issues"
+	},
+	"homepage": "https://github.com/DevGabrielDeSouza/pixijs-inventorygrid#readme",
+	"dependencies": {
+		"pixi.js": "^5.3.7"
+	},
+	"devDependencies": {
+		"@types/node": "^14.14.22",
+		"awesome-typescript-loader": "^5.2.1",
+		"clean-webpack-plugin": "^3.0.0",
+		"copy-webpack-plugin": "^7.0.0",
+		"html-webpack-plugin": "^4.5.1",
+		"terser-webpack-plugin": "^5.1.1",
+		"typescript": "^4.1.3",
+		"webpack": "^5.18.0",
+		"webpack-cli": "^4.4.0",
+		"webpack-dev-server": "^3.11.2"
+	}
+}
