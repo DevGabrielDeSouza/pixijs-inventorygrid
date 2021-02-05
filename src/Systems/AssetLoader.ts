@@ -30,7 +30,7 @@ class AssetLoader extends AppManager{
 			loadingPromise.push(AssetLoader.loadSprite(spriteName));
 		});
 
-		return await Promise.all(loadingPromise);
+		await Promise.all(loadingPromise);
 	}
 
 	public static async loadAllResources() {

@@ -3,11 +3,11 @@ import PixiRenderer from "../Renderers/PixiRenderer";
 import SlotRenderer from "../Renderers/SlotRenderer";
 
 class GridContainer extends PixiRenderer{
-	private _gridWidth: number;
+	protected _gridWidth: number;
 	public get gridWidth(): number {
 		return this._gridWidth;
 	}
-	private _gridHeight: number;
+	protected _gridHeight: number;
 	public get gridHeight(): number {
 		return this._gridHeight;
 	}
@@ -50,12 +50,32 @@ class GridContainer extends PixiRenderer{
 		this.pixiInstance.y = y;
 	}
 
-	initializeSlots(){
+	initializeSlots() {
 		for (let i = 0; i < this.gridWidth; i++) {
 			this._slotsRenderers[i] = [];
 			this._slotsStatus[i] = [];
 			for (let j = 0; j < this.gridHeight; j++) {
 				this.usedSlotsPoints.push(new PIXI.Point(i, j));
+				this._slotsRenderers[i][j] = new SlotRenderer(
+					i * (this.slotSize + this.padding) + this.slotSize / 2,
+					j * (this.slotSize + this.padding) + this.slotSize / 2,
+					this.slotSize,
+					this.slotRadius,
+					this.pixiInstance
+				);
+				this._slotsRenderers[i][j].visible = false;
+				this._slotsStatus[i][j] = -1;
+			}
+		}
+	}
+
+	resetSlots() {
+		this._slotsStatus = [];
+		this._slotsRenderers = [];
+		for (let i = 0; i < this.gridWidth; i++) {
+			this._slotsRenderers[i] = [];
+			this._slotsStatus[i] = [];
+			for (let j = 0; j < this.gridHeight; j++) {
 				this._slotsRenderers[i][j] = new SlotRenderer(
 					i * (this.slotSize + this.padding) + this.slotSize / 2,
 					j * (this.slotSize + this.padding) + this.slotSize / 2,

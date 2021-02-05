@@ -40,7 +40,9 @@ class GridItem extends GridContainer {
 		slotPoints: PIXI.Point[]
 	)
 	{
-
+		//#region Grid initialization 
+		
+		
 		var gridWidth = 0;
 		var gridHeight = 0;
 
@@ -54,6 +56,11 @@ class GridItem extends GridContainer {
 		}
 
 		super(x, y, gridWidth, gridHeight, slotSize, padding, 0);
+		//#endregion
+
+		//#region Properties initialization
+		GridItem.lastId++;
+		this.id = GridItem.lastId;
 
 		this.limboPosition = new PIXI.Point(100, 100);
 
@@ -64,9 +71,6 @@ class GridItem extends GridContainer {
 		this.isbutton = true;
 
 		this.inLimbo = false;
-
-		GridItem.lastId++;
-		this.id = GridItem.lastId;
 
 		this.gridInventory = gridInventory;
 
@@ -84,10 +88,10 @@ class GridItem extends GridContainer {
 		this.container.pivot.x = this.container.width / 2;
 		this.container.pivot.y = this.container.height / 2;
 		this.container.position.set(this.pixiInstance.position.x, this.pixiInstance.position.y);
+		//#endregion
 
-		//console.log(this.pixiInstance.pivot);
-		//this.container.position.set(50, 50);
-
+		//#region Settings for sprite rendering 
+		
 		AppManager.addStageChild(this.container);
 
 		this.pixiInstance.setParent(this.container);
@@ -99,8 +103,10 @@ class GridItem extends GridContainer {
 		this.sprite.pixiInstance.position.set(0, 0);
 		this.sprite.pixiInstance.setParent(this.container);
 		this.sprite.pixiInstance.interactive = false;
+		//#endregion
 
 
+		//#region Interactive settings and initialization 
 		this.draggable = new DraggableObject(this.pixiInstance, this.container, true, 30);
 
 		this.draggable.movePointerEvent.addListener(this.duplicate, this);
@@ -110,8 +116,11 @@ class GridItem extends GridContainer {
 		this.draggable.movePointerEvent.addListener(this.validateSlotsFeedback, this);
 		this.draggable.upPointerEvent.addListener(this.dragEnd, this);
 		this.draggable.upOutsidePointerEvent.addListener(this.dragEnd, this);
+		//#endregion
 
 		GridItem.allItems.push(this);
+
+		//this.rotate();
 	}
 
 	//#region Automatic movements 
@@ -126,12 +135,36 @@ class GridItem extends GridContainer {
 		this.setInventorySlots(-1);
 		this.container.position = this.limboPosition;
 		this.inLimbo = true;
+		this.setColor(0xffffff);
 	}
 
 	destroy(){
 		this.container.visible = false;
 		this.setInventorySlots(-1);
 	}
+
+	/*rotate(){
+		for(let i = 0; i < this.usedSlotsPoints.length; i++){
+			let x = this.usedSlotsPoints[i].x;
+			let y = this.usedSlotsPoints[i].y;
+
+			this.usedSlotsPoints[i].set(y, -x);
+
+		}
+
+		for (var i = 0; i < this.usedSlotsPoints.length; i++) {
+			if (this.usedSlotsPoints[i].x + 1 > this.gridWidth) {
+				this._gridWidth = this.usedSlotsPoints[i].x + 1;
+			}
+			if (this.usedSlotsPoints[i].y + 1 > this.gridHeight) {
+				this._gridHeight = this.usedSlotsPoints[i].y + 1;
+			}
+		}
+
+		this.resetSlots();
+
+		this.setSlotsStatus(this.id, true);
+	}*/
 	//#endregion
 
 	//#region Calculate inventory slots info 
@@ -308,9 +341,16 @@ class GridItem extends GridContainer {
 			} else {
 				//this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);
 				if (!this.inLimbo) {
-					this.destroy();
+					if (MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)) {
+						this.goToLimbo();
+						this.setColor(0xffffff);
+					}else{
+						this.destroy();
+						this.setColor(0xffffff);
+					}
 				} else if (MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)){
 					this.container.position = this.draggable.positionBeforeDrag;
+					this.setColor(0xffffff);
 				}
 				/*if(!MathUtils.aabbCollision(this.container, this.gridInventory.pixiInstance)){
 					this.draggable.positionBeforeDrag.set(this.container.position.x, this.container.position.y);

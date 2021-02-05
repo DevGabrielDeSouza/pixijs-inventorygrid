@@ -45,7 +45,7 @@ const main = async () => {
 	let drag = new DraggableObject(rect2.pixiInstance, true, 30);
 	let dragBall = new DraggableObject(sprite.pixiInstance, true, 30);*/
 
-	let inventory = new GridInventory(window.innerWidth / 2, window.innerHeight / 2, 6, 4, 40, 10);
+	let inventory = new GridInventory(window.innerWidth / 2, window.innerHeight / 2 - 100, 8, 6, 40, 10);
 	let item = new GridItem(400, 550, 3, 2, 50, 0, inventory, "assets/boomerang.png", [
 		new PIXI.Point(0, 0), new PIXI.Point(1, 0), new PIXI.Point(1, 1)
 	]);
